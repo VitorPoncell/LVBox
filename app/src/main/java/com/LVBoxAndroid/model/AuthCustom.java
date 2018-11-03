@@ -32,10 +32,10 @@ public class AuthCustom {
 
     public AuthCustom(Activity context){
         this.activity = context;
+        firebaseAuth = FirebaseConfig.getFirebaseAuth();
     }
 
     public void loginValidation(final User user, final IAuthValidationListener listener) {
-        firebaseAuth = FirebaseConfig.getFirebaseAuth();
         firebaseAuth.signInWithEmailAndPassword(
                 user.getEmail(),
                 user.getPassword()
@@ -94,7 +94,6 @@ public class AuthCustom {
     }
 
     public void recovery(String email, final IAuthRecoverListener listener){
-        firebaseAuth = FirebaseConfig.getFirebaseAuth();
 
             firebaseAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
@@ -110,7 +109,6 @@ public class AuthCustom {
     }
 
     public void addUser(final User user, final IAuthSignupListener listener){
-        firebaseAuth = FirebaseConfig.getFirebaseAuth();
         firebaseAuth.createUserWithEmailAndPassword(user.getEmail(),user.getPassword()).addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -142,5 +140,9 @@ public class AuthCustom {
                 }
             }
         });
+    }
+
+    public void logout(){
+        firebaseAuth.signOut();
     }
 }
