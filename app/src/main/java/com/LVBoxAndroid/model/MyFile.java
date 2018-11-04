@@ -1,5 +1,7 @@
 package com.LVBoxAndroid.model;
 
+import com.google.firebase.database.Exclude;
+
 public class MyFile {
 
     private String name;
@@ -8,6 +10,8 @@ public class MyFile {
     private String path;
     private String alive;
     private String owner;
+    private String state;
+    private String id;
 
     public MyFile(String name){
         this.name = name;
@@ -61,5 +65,23 @@ public class MyFile {
 
     public void setOwner(String owner) {
         this.owner = owner;
+    }
+
+    @Exclude
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    @Exclude
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.LVBoxAndroid.model.Contact;
 import com.LVBoxAndroid.model.User;
 import com.LVBoxAndroid.util.Base64Custom;
+import com.LVBoxAndroid.util.BaseUrl;
 import com.LVBoxAndroid.util.FirebaseConfig;
 import com.LVBoxAndroid.util.PreferencesCustom;
 import com.google.firebase.database.DataSnapshot;
@@ -34,7 +35,8 @@ public class MainControler {
         ActivityCompat.requestPermissions(activity,
                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
 
-        File appFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"LVBox");
+        BaseUrl.localPath = Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"LVBox";
+        File appFolder = new File(BaseUrl.localPath);
 
         if(!appFolder.exists()){
             boolean success = appFolder.mkdirs();
