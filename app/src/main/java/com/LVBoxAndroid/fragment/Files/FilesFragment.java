@@ -1,6 +1,10 @@
 package com.LVBoxAndroid.fragment.Files;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -11,9 +15,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.LVBoxAndroid.R;
+import com.LVBoxAndroid.activity.AudioPlayer.AudioActivity;
 import com.LVBoxAndroid.activity.Main.MainActivity;
+import com.LVBoxAndroid.activity.VideoPlayer.VideoPlayerActivity;
 import com.LVBoxAndroid.adapter.FilesAdapter;
 import com.LVBoxAndroid.model.SimpleFileDialog;
 import com.LVBoxAndroid.model.MyFile;
@@ -22,6 +29,9 @@ import com.github.clans.fab.FloatingActionButton;
 
 import java.io.File;
 import java.util.ArrayList;
+
+import yogesh.firzen.filelister.FileListerDialog;
+import yogesh.firzen.filelister.OnFileSelectedListener;
 
 
 public class FilesFragment extends Fragment {
@@ -49,15 +59,17 @@ public class FilesFragment extends Fragment {
             public void onClick(View v) {
                 Toast.makeText(getContext(),"add pressed",Toast.LENGTH_LONG).show();
 
-                SimpleFileDialog simpleFileDialog = new SimpleFileDialog(getActivity(), new SimpleFileDialog.SimpleFileDialogListener() {
+                FileListerDialog fileListerDialog = FileListerDialog.createFileListerDialog(getContext());
+                fileListerDialog.setOnFileSelectedListener(new OnFileSelectedListener() {
                     @Override
-                    public void onChosenDir(String chosenDir) {
-                        controler.uploadFile(chosenDir);
+                    public void onFileSelected(File file, String path) {
+                        //Toast.makeText(getContext(),file.getName(),Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getContext(),path,Toast.LENGTH_LONG).show();
+                        controler.uploadFile(path);
                     }
                 });
-
-                simpleFileDialog.Default_File_Name = "";
-                simpleFileDialog.chooseFile_or_Dir();
+                fileListerDialog.setFileFilter(FileListerDialog.FILE_FILTER.ALL_FILES);
+                fileListerDialog.show();
             }
         });
 
@@ -100,14 +112,15 @@ public class FilesFragment extends Fragment {
                             break;
                     }
                 }else{
+                    Log.i("Log: ","extension " + list.get(position).getExtension());
                     switch (list.get(position).getExtension()){
                         case ".mp3":
                             Log.i("Flag ","toque simples");
-                            //open audio
+                            openAudioActivity(position);
                             break;
                         case ".mp4":
                             Log.i("Flag ","toque simples");
-                            //open audio
+                            openVideoActivity(position);
                             break;
                         case ".png":
                         case ".jpg":
@@ -127,7 +140,18 @@ public class FilesFragment extends Fragment {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                    Log.i("Flag ","toque long");
+                AlertDialog.Builder builder = new AlertDialog.Builder(activity,R.style.AppTheme);
+                builder.setTitle("Delete on cloud?");
+                builder.setMessage("This will delete the file on cloud and on your device");
+
+                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        controler.deleteFileAll(list.get(position));
+                    }
+                });
+                builder.create();
+                builder.show();
                 return true;
             }
         });
@@ -170,6 +194,32 @@ public class FilesFragment extends Fragment {
             controler.downloadFile(list.get(position).getPath(), BaseUrl.localPath,list.get(position).getName(),list.get(position).getExtension(),list.get(position).getId());
         }
 
+    }
+
+    private void openAudioActivity(int position){
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+        path += File.separator +"LVBox"+File.separator+ "audio" + File.separator + list.get(position).getName() + list.get(position).getExtension();
+        Intent intent = new Intent(activity,AudioActivity.class);
+        intent.putExtra("path",path);
+        intent.putExtra("name",list.get(position).getName());
+        startActivity(intent);
+    }
+
+    private void openVideoActivity(int position){
+        if(list.get(position).getState().equals("local")) {
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+            path += File.separator + "LVBox" + File.separator + "video" + File.separator + list.get(position).getName() + list.get(position).getExtension();
+            Intent intent = new Intent(activity, VideoPlayerActivity.class);
+            intent.putExtra("path", path);
+            intent.putExtra("name", list.get(position).getName());
+            startActivity(intent);
+        }else{
+
+        }
+    }
+
+    public void showToast(String msg){
+        Toast.makeText(activity,msg,Toast.LENGTH_LONG).show();
     }
 
 }

@@ -22,6 +22,8 @@
         </activity>
         <activity android:name=".activity.Main.MainActivity" />
         <activity android:name=".activity.SignUp.SignUpActivity" />
+        <activity android:name=".activity.AudioPlayer.AudioActivity" />
+        <activity android:name=".activity.VideoPlayer.VideoPlayerActivity"></activity>
     </application>
 
 </manifest>

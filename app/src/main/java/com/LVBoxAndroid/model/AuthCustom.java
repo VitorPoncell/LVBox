@@ -3,6 +3,7 @@ package com.LVBoxAndroid.model;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.LVBoxAndroid.util.Base64Custom;
 import com.LVBoxAndroid.util.FirebaseConfig;
@@ -58,11 +59,11 @@ public class AuthCustom {
                             User userRecover = dataSnapshot.getValue(User.class);
 
                             if(userRecover == null){
-
                             }else {
                                 PreferencesCustom preferencesCustom = new PreferencesCustom(activity);
                                 preferencesCustom.saveData(userIdentifier, userRecover.getName(), userRecover.getEmail());
                             }
+                            listener.onSuccessLogin();
 
                         }
 
@@ -73,7 +74,6 @@ public class AuthCustom {
                     };
                     databaseReference.addListenerForSingleValueEvent(valueEventListenerUser);
 
-                    listener.onSuccessLogin();
 
                 } else {
                     String error = "";

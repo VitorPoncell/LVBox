@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import TransactionCustom.ITransactionListener;
 import TransactionCustom.TransactionControler;
 
+
 public class FilesControler {
 
     private Activity activity;
@@ -324,15 +325,61 @@ public class FilesControler {
             case ".mp4":
                 type = "video";
                 break;
+            case ".jpg":
+            case ".png":
+                type = "image";
+                break;
             default:
                 type = "other";
                 break;
         }
         File file = new File(BaseUrl.localPath+File.separator+type+File.separator+fileName+fileExtension);
+        Log.i("Flag: ",file.getAbsolutePath());
         if(file.exists()){
             file.delete();
         }else{
             //erro arquivo n encontrado
         }
+    }
+
+    public void deleteFileAll(MyFile myFile){
+        //delete local
+        deleteLocalFile(myFile.getName(),myFile.getExtension());
+        //delete fom storage
+        transactionControler.addDeleteRequest(myFile.getName(), myFile.getPath(), new ITransactionListener() {
+            @Override
+            public void onInit(String s) {
+
+            }
+
+            @Override
+            public void onClomplete(String s, String s1) {
+                fragment.showToast(s);
+            }
+
+            @Override
+            public void onError(String s, String s1) {
+
+            }
+        });
+        //delete from database
+        String type = "";
+        switch (myFile.getExtension()){
+            case ".mp3":
+                type = "audio";
+                break;
+            case ".mp4":
+                type = "video";
+                break;
+            case ".jpg":
+            case ".png":
+                type = "image";
+                break;
+            default:
+                type = "other";
+                break;
+        }
+        databaseReference.child(type).child(myFile.getId()).removeValue();
+
     }
 }
