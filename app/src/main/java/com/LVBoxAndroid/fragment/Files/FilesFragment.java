@@ -3,6 +3,7 @@ package com.LVBoxAndroid.fragment.Files;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
@@ -124,6 +125,7 @@ public class FilesFragment extends Fragment {
                             break;
                         case ".png":
                         case ".jpg":
+                            openImage(position);
                             Log.i("Flag ","toque simples");
                             //open audio
                             break;
@@ -197,12 +199,14 @@ public class FilesFragment extends Fragment {
     }
 
     private void openAudioActivity(int position){
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath();
-        path += File.separator +"LVBox"+File.separator+ "audio" + File.separator + list.get(position).getName() + list.get(position).getExtension();
-        Intent intent = new Intent(activity,AudioActivity.class);
-        intent.putExtra("path",path);
-        intent.putExtra("name",list.get(position).getName());
-        startActivity(intent);
+        if(list.get(position).getState().equals("local")) {
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+            path += File.separator + "LVBox" + File.separator + "audio" + File.separator + list.get(position).getName() + list.get(position).getExtension();
+            Intent intent = new Intent(activity, AudioActivity.class);
+            intent.putExtra("path", path);
+            intent.putExtra("name", list.get(position).getName());
+            startActivity(intent);
+        }
     }
 
     private void openVideoActivity(int position){
@@ -213,8 +217,17 @@ public class FilesFragment extends Fragment {
             intent.putExtra("path", path);
             intent.putExtra("name", list.get(position).getName());
             startActivity(intent);
-        }else{
+        }
+    }
 
+    private void openImage(int position){
+        if(list.get(position).getState().equals("local")) {
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+            path += File.separator + "LVBox" + File.separator + "image" + File.separator + list.get(position).getName() + list.get(position).getExtension();
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setDataAndType(Uri.parse(path), "image/");
+            activity.startActivity(intent);
         }
     }
 
